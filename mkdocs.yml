@@ -1,0 +1,8 @@
+site_name: BDT
+nav:
+    - Index: index.md
+    - About: about.md
+    - 安装:
+        - Hadoop 单机版安装: setup/hadoop-single-node-installation.md
+theme:
+    name: material

@@ -1,8 +1,9 @@
-site_name: BDT
+site_name: 大数据实践指南 
 nav:
     - Index: index.md
-    - About: about.md
-    - 安装:
+    - 环境搭建:
         - Hadoop 单机版安装: setup/hadoop-single-node-installation.md
 theme:
     name: material
+    features:
+        - navigation.tabs

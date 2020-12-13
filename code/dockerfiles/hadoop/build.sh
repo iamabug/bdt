@@ -5,4 +5,4 @@ URL="${MIRROR_PREFIX}/apache/hadoop/common/hadoop-${VERSION}/hadoop-${VERSION}.t
 
 download "hadoop" "${URL}" "hadoop.tar.gz"
 
-docker build -t hadoop .
+docker build -t iamabug1128/hadoop .

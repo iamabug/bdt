@@ -1,12 +1,8 @@
-> Hadoop版本：3.3.0
->
-> JDK：OpenJDK 8
->
-> OS：Ubuntu 18.04
+#单节点Hadoop镜像
 
 以Dockerfile的方式，在Ubuntu 18.04上安装单节点的Hadoop 3.3.0集群。
 
-# 镜像获取
+## 获取现成镜像
 
 本文档中构建的镜像已经上传在至DockerHub，可以直接使用docker命令拉取并运行：
 
@@ -18,9 +14,9 @@ docker run -h bigdata -p 8088:8088 -it iamabug1128/hadoop bash
 
 8088端口的映射是为了方便在容器外访问YARN的Web UI。
 
-这个镜像对应的Dockerfile可以通过查看，根据需要进行调整。
+这个镜像对应的Dockerfile可以在github上找到：[https://github.com/iamabug/bdt/tree/main/code/dockerfiles/hadoop](https://github.com/iamabug/bdt/tree/main/code/dockerfiles/hadoop)，根据需要进行调整。
 
-# 安装配置OpenJDK
+## 安装配置OpenJDK
 
 Hadoop生态中的软件大都使用Java/Scala开发，Java运行环境是必需的。
 
@@ -29,7 +25,7 @@ RUN apt-get update && apt-get install -y openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ```
 
-# 安装配置OpenSSH
+## 安装配置OpenSSH
 
 在Hadoop常见的操作中，我们需要能够在一个节点（比如NameNode）上控制其余节点上的Hadoop服务，因此需要安装SSH服务，并且配置密钥登录的方式，简化操作。
 
@@ -49,7 +45,7 @@ RUN adduser --ingroup hadoop --quiet --disabled-password hadoop
 RUN su hadoop -c "ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && chmod 0600 ~/.ssh/authorized_keys"
 ```
 
-# 安装配置Hadoop
+## 安装配置Hadoop
 
 从国内镜像下载Hadoop二进制包：
 
@@ -90,11 +86,11 @@ ENV PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}
 RUN echo "PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}" >> /etc/environment
 ```
 
-# 配置文件说明
+## 配置文件说明
 
 为了让HDFS、MapReduce和YARN可以正常运行，Hadoop的各个配置文件需要一些基础的配置项。
 
-## core-site.xml
+### core-site.xml
 
 ```xml
 <configuration>
@@ -107,7 +103,7 @@ RUN echo "PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}" >> /etc/env
 </configuration>
 ```
 
-## hdfs-site.xml
+### hdfs-site.xml
 
 ```xml
 <configuration>
@@ -134,7 +130,7 @@ RUN echo "PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}" >> /etc/env
 </configuration>
 ```
 
-## mapred-site.xml
+### mapred-site.xml
 
 ```xml
 <configuration>
@@ -159,11 +155,19 @@ RUN echo "PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}" >> /etc/env
 </configuration>
 ```
 
-## yarn-site.xml
+### yarn-site.xml
 
-yarn-site.xml暂没有需要额外指定的配置。
+```xml
+<configuration>
+    <property>
+      	<!--没有此配置运行下文所述example任务会报错-->
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+</configuration>
+```
 
-# 启动服务
+## 启动服务
 
 先启动ssh服务：
 
@@ -180,7 +184,7 @@ su hadoop -c "hdfs namenode -format && start-all.sh"
 启动后查看进程：
 
 ```bash
-root@bigdata:/# jps
+jps
 512 DataNode
 401 NameNode
 1667 Jps
@@ -191,10 +195,42 @@ root@bigdata:/# jps
 
 可以看到，成功的启动了DataNode、NameNode、SecondaryNameNode、NodeManager、ResourceManager。
 
-# 功能测试
+## 功能测试
 
+* 创建目录：
 
+```bash
+su hadoop
+hdfs dfs -mkdir -p /user/hadoop/input
+```
 
-#  参考文档
+* 上传hadoop的xml配置文件到HDFS：
 
-https://haadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html
+```bash
+hdfs dfs -put /etc/hadoop/*.xml /user/hadoop/input
+```
+
+* 运行hadoop自带的一个字符串检索任务，找出所有dfs开头的字符串：
+
+```bash
+hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar grep input output 'dfs[a-z.]+'
+```
+
+提交任务之后，在宿主机的浏览器中访问 [http://localhost:8088](http://localhost:8088)，可以看到 `grep-search` 任务的信息：
+
+![](https://tva1.sinaimg.cn/large/0081Kckwgy1glmgiujw33j329s090acf.jpg)
+
+待任务运行完毕后，可以查看输出：
+
+```bash
+hdfs dfs -text /user/hadoop/output/*
+1       dfsadmin
+1       dfs.webhdfs.enable
+1       dfs.replication
+1       dfs.name.dir
+1       dfs.data.dir
+```
+
+## 参考文档
+
+1. [https://haadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html](https://haadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)

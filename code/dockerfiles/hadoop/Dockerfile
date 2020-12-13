@@ -42,4 +42,6 @@ ENV PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}
 RUN echo "PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}" >> /etc/environment
 
 # 拷贝启动脚本
-ADD hadoop_init.sh /run/
+COPY hadoop_init.sh wait_to_die.sh /run/
+
+ENTRYPOINT ["bash", "-c", "/run/hadoop_init.sh && /run/wait_to_die.sh"]

@@ -1,0 +1,728 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.7">
+    
+    
+      
+        <title>Hadoop 单机版安装 - 大数据实践指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.19753c6b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hadoop" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="大数据实践指南" class="md-header-nav__button md-logo" aria-label="大数据实践指南">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            大数据实践指南
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Hadoop 单机版安装
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+
+  
+
+<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+    
+    <a href="../.." class="md-tabs__link">
+      Index
+    </a>
+  </li>
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+      
+        
+      
+      <a href="./" class="md-tabs__link md-tabs__link--active">
+        环境搭建
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="大数据实践指南" class="md-nav__button md-logo" aria-label="大数据实践指南">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    大数据实践指南
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Index
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    <label class="md-nav__link" for="nav-2">
+      环境搭建
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="环境搭建" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        环境搭建
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Hadoop 单机版安装
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Hadoop 单机版安装
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    获取现成镜像
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openjdk" class="md-nav__link">
+    安装配置OpenJDK
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openssh" class="md-nav__link">
+    安装配置OpenSSH
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hadoop_1" class="md-nav__link">
+    安装配置Hadoop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    配置文件说明
+  </a>
+  
+    <nav class="md-nav" aria-label="配置文件说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-sitexml" class="md-nav__link">
+    core-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-sitexml" class="md-nav__link">
+    hdfs-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mapred-sitexml" class="md-nav__link">
+    mapred-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yarn-sitexml" class="md-nav__link">
+    yarn-site.xml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    启动服务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    功能测试
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    参考文档
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    获取现成镜像
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openjdk" class="md-nav__link">
+    安装配置OpenJDK
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openssh" class="md-nav__link">
+    安装配置OpenSSH
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hadoop_1" class="md-nav__link">
+    安装配置Hadoop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    配置文件说明
+  </a>
+  
+    <nav class="md-nav" aria-label="配置文件说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-sitexml" class="md-nav__link">
+    core-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-sitexml" class="md-nav__link">
+    hdfs-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mapred-sitexml" class="md-nav__link">
+    mapred-site.xml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#yarn-sitexml" class="md-nav__link">
+    yarn-site.xml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    启动服务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    功能测试
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    参考文档
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="hadoop">单节点Hadoop镜像</h1>
+<p>以Dockerfile的方式，在Ubuntu 18.04上安装单节点的Hadoop 3.3.0集群。</p>
+<h2 id="_1">获取现成镜像</h2>
+<p>本文档中构建的镜像已经上传在至DockerHub，可以直接使用docker命令拉取并运行：</p>
+<pre><code class="language-bash">docker run -h bigdata -p 8088:8088 -it iamabug1128/hadoop bash 
+</code></pre>
+<blockquote>
+<p>注意：这里的-h bigdata是必须的，因为hadoop的配置文件依赖于这个特定的主机名。</p>
+</blockquote>
+<p>8088端口的映射是为了方便在容器外访问YARN的Web UI。</p>
+<p>这个镜像对应的Dockerfile可以在github上找到：<a href="https://github.com/iamabug/bdt/tree/main/code/dockerfiles/hadoop">https://github.com/iamabug/bdt/tree/main/code/dockerfiles/hadoop</a>，根据需要进行调整。</p>
+<h2 id="openjdk">安装配置OpenJDK</h2>
+<p>Hadoop生态中的软件大都使用Java/Scala开发，Java运行环境是必需的。</p>
+<pre><code class="language-bash">RUN apt-get update &amp;&amp; apt-get install -y openjdk-8-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+</code></pre>
+<h2 id="openssh">安装配置OpenSSH</h2>
+<p>在Hadoop常见的操作中，我们需要能够在一个节点（比如NameNode）上控制其余节点上的Hadoop服务，因此需要安装SSH服务，并且配置密钥登录的方式，简化操作。</p>
+<p>安装：</p>
+<pre><code class="language-dockerfile">RUN apt-get install -y openssh-server openssh-client
+</code></pre>
+<p>配置：</p>
+<pre><code class="language-dockerfile"># 添加hadoop组和用户，使用hadoop用户管理hadoop服务
+RUN addgroup hadoop
+RUN adduser --ingroup hadoop --quiet --disabled-password hadoop
+# 为hadoop用户生成公私钥
+RUN su hadoop -c &quot;ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa &amp;&amp; cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; chmod 0600 ~/.ssh/authorized_keys&quot;
+</code></pre>
+<h2 id="hadoop_1">安装配置Hadoop</h2>
+<p>从国内镜像下载Hadoop二进制包：</p>
+<pre><code class="language-bash">wget https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.3.0/hadoop-3.3.0.tar.gz -O hadoop.tar.gz
+</code></pre>
+<p>添加到镜像中：</p>
+<pre><code class="language-dockerfile"># ADD 会自动进行解压
+ADD hadoop.tar.gz /usr/local
+RUN mv /usr/local/hadoop-3.3.0 /usr/local/hadoop
+# 创建配置文件目录和数据目录
+RUN ln -s /usr/local/hadoop/etc/hadoop /etc/hadoop
+RUN mkdir -p /usr/local/hadoop/data/{namenode,datanode} /etc/hadoop-httpfs/conf/ /usr/local/hadoop/logs
+</code></pre>
+<p>修改配置和目录权限：</p>
+<pre><code class="language-dockerfile">RUN echo &quot;export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64&quot; &gt;&gt; /etc/hadoop/hadoop-env.sh &amp;&amp; \
+        echo &quot;bigdata&quot; &gt; /etc/hadoop/workers &amp;&amp; \
+        chown -R hadoop:hadoop /usr/local/hadoop
+</code></pre>
+<p>拷贝配置文件：</p>
+<pre><code class="language-dockerfile">COPY core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml /etc/hadoop/
+</code></pre>
+<p>设置环境变量：</p>
+<pre><code class="language-dockerfile"># PATH环境变量，这里设置了两次，ENV的方法只对root用户生效，/etc/environment对其它用户生效
+ENV PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}
+RUN echo &quot;PATH=/usr/local/hadoop/bin:/usr/local/hadoop/sbin:${PATH}&quot; &gt;&gt; /etc/environment
+</code></pre>
+<h2 id="_2">配置文件说明</h2>
+<p>为了让HDFS、MapReduce和YARN可以正常运行，Hadoop的各个配置文件需要一些基础的配置项。</p>
+<h3 id="core-sitexml">core-site.xml</h3>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;fs.defaultFS&lt;/name&gt;
+        &lt;!--这里假设容器主机名为bigdata--&gt;
+        &lt;value&gt;hdfs://bigdata:8020/&lt;/value&gt;
+        &lt;description&gt;NameNode URI&lt;/description&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h3 id="hdfs-sitexml">hdfs-site.xml</h3>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;!--因为是单节点的集群，所以hdfs的副本数设为1--&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.replication&lt;/name&gt;
+        &lt;value&gt;1&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--指定namenode数据目录--&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.name.dir&lt;/name&gt;
+        &lt;value&gt;/usr/local/hadoop/data/namenode&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--指定datanode数据模流--&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.data.dir&lt;/name&gt;
+        &lt;value&gt;/usr/local/hadoop/data/datanode&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--启用webhdfs，可选--&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.webhdfs.enable&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h3 id="mapred-sitexml">mapred-site.xml</h3>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;!--在YARN上运行MapReduce任务--&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.framework.name&lt;/name&gt;
+        &lt;value&gt;yarn&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--下面三个配置项如果不设置，运行MR任务时会提示并报错--&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.app.mapreduce.am.env&lt;/name&gt;
+        &lt;value&gt;HADOOP_MAPRED_HOME=/usr/local/hadoop&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.map.env&lt;/name&gt;
+        &lt;value&gt;HADOOP_MAPRED_HOME=/usr/local/hadoop&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.reduce.env&lt;/name&gt;
+        &lt;value&gt;HADOOP_MAPRED_HOME=/usr/local/hadoop&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h3 id="yarn-sitexml">yarn-site.xml</h3>
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;!--没有此配置运行下文所述example任务会报错--&gt;
+        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h2 id="_3">启动服务</h2>
+<p>先启动ssh服务：</p>
+<pre><code class="language-bash">service ssh start
+</code></pre>
+<p>然后以hadoop用户身份启动hadoop的所有服务：</p>
+<pre><code class="language-bash">su hadoop -c &quot;hdfs namenode -format &amp;&amp; start-all.sh&quot;
+</code></pre>
+<p>启动后查看进程：</p>
+<pre><code class="language-bash">jps
+512 DataNode
+401 NameNode
+1667 Jps
+1108 NodeManager
+743 SecondaryNameNode
+990 ResourceManager
+</code></pre>
+<p>可以看到，成功的启动了DataNode、NameNode、SecondaryNameNode、NodeManager、ResourceManager。</p>
+<h2 id="_4">功能测试</h2>
+<ul>
+<li>创建目录：</li>
+</ul>
+<pre><code class="language-bash">su hadoop
+hdfs dfs -mkdir -p /user/hadoop/input
+</code></pre>
+<ul>
+<li>上传hadoop的xml配置文件到HDFS：</li>
+</ul>
+<pre><code class="language-bash">hdfs dfs -put /etc/hadoop/*.xml /user/hadoop/input
+</code></pre>
+<ul>
+<li>运行hadoop自带的一个字符串检索任务，找出所有dfs开头的字符串：</li>
+</ul>
+<pre><code class="language-bash">hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar grep input output 'dfs[a-z.]+'
+</code></pre>
+<p>提交任务之后，在宿主机的浏览器中访问 <a href="http://localhost:8088">http://localhost:8088</a>，可以看到 <code>grep-search</code> 任务的信息：</p>
+<p><img alt="" src="https://tva1.sinaimg.cn/large/0081Kckwgy1glmgiujw33j329s090acf.jpg" /></p>
+<p>待任务运行完毕后，可以查看输出：</p>
+<pre><code class="language-bash">hdfs dfs -text /user/hadoop/output/*
+1       dfsadmin
+1       dfs.webhdfs.enable
+1       dfs.replication
+1       dfs.name.dir
+1       dfs.data.dir
+</code></pre>
+<h2 id="_5">参考文档</h2>
+<ol>
+<li><a href="https://haadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html">https://haadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html</a></li>
+</ol>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../.." class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Index
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.0ac82a11.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: ['navigation.tabs'],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
